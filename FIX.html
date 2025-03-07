@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kalkulator Pengenceran</title> 
+    <style>
+
+        .logo {
+            display: flex;
+            align-items: center; /* Menyamakan tinggi teks dan gambar */
+            gap: 10px; /* Jarak antara teks dan gambar */
+        }
+        img {
+            max-width: 100px; /* Sesuaikan ukuran gambar */
+            height: auto;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.2);
+            max-width: 1000px;
+            width: 100%;
+            gap : 20px;
+        }
+
+        .calculator-section {
+            display: flex;
+            flex-wrap: wrap;
+            background: white;
+
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            gap : 20px;
+            align-items: center;
+        }
+
+        .calculator {
+            flex: 1;
+            min-width: 300px;
+            text-align: center;
+        }
+
+        .flowchart-container {
+            flex: 1;
+            min-width: 300px;
+            background: #eef2f7;
+            border-radius: 10px;
+            overflow-x: auto;
+            max-height: 500px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+          
+        }
+
+        #flowchart, #flowchart1 {
+            min-width: 400px;
+            min-height: 400px;
+        }
+
+        input, button {
+            margin-top: 10px;
+            padding: 10px;
+            font-size: 16px;
+            width: 75%;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        button {
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        #hasilBerantai, #hasilSatuTarget {
+            margin-top: 20px;
+            text-align: left;
+        }
+
+        .target-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .target-container input {
+            flex: 1;
+        }
+
+        @media (max-width: 768px) {
+            .calculator-section {
+                flex-direction: column;
+            }
+        }
+    </style>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            mermaid.initialize({ startOnLoad: false });
+        });
+
+        function tambahTarget() {
+            let container = document.getElementById("targets");
+            if (container.children.length < 10) {
+                let div = document.createElement("div");
+                div.className = "target-container";
+
+                let input = document.createElement("input");
+                input.type = "number";
+                input.className = "target";
+                input.placeholder = "Target konsentrasi";
+
+                let select = document.createElement("select");
+                select.className = "volume";
+                [25, 50, 100, 200, 250, 500, 1000].forEach(volume => {
+                    let option = document.createElement("option");
+                    option.value = volume;
+                    option.textContent = volume + " mL";
+                    select.appendChild(option);
+                });
+
+                div.appendChild(input);
+                div.appendChild(select);
+                container.appendChild(div);
+            }
+        }
+
+        function hitungPengenceranBerantai() {
+        let konsentrasiAwal = parseFloat(document.getElementById("konsentrasiAwalBerantai").value);
+        let targetInputs = document.getElementsByClassName("target");
+        let volumeSelects = document.getElementsByClassName("volume");
+        let targets = [];
+
+        for (let i = 0; i < targetInputs.length; i++) {
+            let value = parseFloat(targetInputs[i].value);
+            let volume = parseInt(volumeSelects[i].value);
+            if (!isNaN(value)) targets.push({ konsentrasi: value, volume: volume });
+        }
+
+        targets.sort((a, b) => b.konsentrasi - a.konsentrasi);
+
+        let pipetTersedia = [1, 2, 3, 4, 5, 6, 10, 15, 20, 25, 40, 50,100];
+        let larutanTersedia = [{ nama: "Larutan_Awal", konsentrasi: konsentrasiAwal, volume: Infinity }];
+        let hasil = "";
+        let diagramFlowchart = `graph LR; Larutan_Awal["Larutan Awal\n${konsentrasiAwal} \nVolume: ∞ mL"]`;
+
+        targets.forEach((target, index) => {
+            let terbaik = null;
+            let sumberLarutan = null;
+            let maxVolume = -Infinity;
+            let larutanDitemukan = false;
+
+            for (let larutan of larutanTersedia) {
+                if (larutan.nama !== "Larutan_Awal" && larutan.volume > maxVolume && larutan.volume - 20 >= 0) {
+                    for (let pipet of pipetTersedia) {
+                        let konsentrasiBaru = (pipet / target.volume) * larutan.konsentrasi;
+                        if (Math.abs(konsentrasiBaru - target.konsentrasi) < 0.01 && larutan.volume - pipet >= 20) {
+                            terbaik = { pipet, labu: target.volume };
+                            sumberLarutan = larutan;
+                            maxVolume = larutan.volume;
+                            larutanDitemukan = true;
+                        }
+                    }
+                }
+            }
+
+            if (!larutanDitemukan) {
+                sumberLarutan = larutanTersedia.find(l => l.nama === "Larutan_Awal");
+                for (let pipet of pipetTersedia) {
+                    let konsentrasiBaru = (pipet / target.volume) * sumberLarutan.konsentrasi;
+                    if (Math.abs(konsentrasiBaru - target.konsentrasi) < 0.01) {
+                        terbaik = { pipet, labu: target.volume };
+                        break;
+                    }
+                }
+            }
+
+            if (terbaik) {
+                let namaLarutan = `Larutan_${String.fromCharCode(65 + index)}`;
+                hasil += `<strong>${namaLarutan.replace(/_/g, " ")} - Target: ${target.konsentrasi} </strong><br/>`;
+                hasil += `Diencerkan dari: ${sumberLarutan.nama.replace(/_/g, " ")}<br/>`;
+                hasil += `Ambil ${terbaik.pipet} mL dari ${sumberLarutan.nama.replace(/_/g, " ")} lalu encerkan hingga ${terbaik.labu} mL.<br/>`;
+                hasil += `<em>Konsentrasi hasil:</em> ${target.konsentrasi.toFixed(2)} .<br/><br/>`;
+
+                larutanTersedia.push({ nama: namaLarutan, konsentrasi: target.konsentrasi, volume: terbaik.labu });
+                sumberLarutan.volume -= terbaik.pipet;
+
+                diagramFlowchart += `
+                    ${sumberLarutan.nama} -->|${terbaik.pipet} mL | ${namaLarutan}["${namaLarutan.replace(/_/g, " ")}\n${target.konsentrasi.toFixed(2)} \nVolume: ${terbaik.labu} mL"]`;
+            } else {
+                hasil += `<strong>Larutan ${String.fromCharCode(65 + index)} - Target: ${target.konsentrasi} </strong><br/>`;
+                hasil += `Tidak ditemukan pengenceran yang presisi atau volume tidak mencukupi.<br/><br/>`;
+            }
+        });
+
+        document.getElementById("hasilBerantai").innerHTML = hasil;
+        document.getElementById("flowchart").innerHTML = `<div class="mermaid">${diagramFlowchart}</div>`;
+        mermaid.init();
+    }
+
+        function hitungPengenceranSatuTarget() {
+    let konsentrasiAwal = parseFloat(document.getElementById("konsentrasiAwalSatuTarget").value);
+    let konsentrasiAkhir = parseFloat(document.getElementById("konsentrasiAkhirSatuTarget").value);
+    let pipetTersedia = [1, 2, 3, 4, 5, 10, 15, 25, 40, 50];
+    let labuTersedia = [50, 100, 200, 250];
+    let hasil = "";
+    let diagramFlowchart1 = `graph LR; Larutan_Awal["Larutan Awal\<br>${konsentrasiAwal} \<br>Volume: ∞ mL"]`;
+    
+    let langkah = 1;
+    let konsentrasiSekarang = konsentrasiAwal;
+
+    if (isNaN(konsentrasiAwal) || isNaN(konsentrasiAkhir) || konsentrasiAkhir >= konsentrasiAwal) {
+        document.getElementById("hasilSatuTarget").innerHTML = "Masukkan angka yang valid! Konsentrasi akhir harus lebih kecil dari konsentrasi awal.";
+        return;
+    }
+
+    while (konsentrasiSekarang > konsentrasiAkhir && langkah <= 3) {
+        let terbaik = null;
+        let terbaikKonsentrasi = null;
+
+        for (let pipet of pipetTersedia) {
+            for (let labu of labuTersedia) {
+                let konsentrasiBaru = (pipet / labu) * konsentrasiSekarang;
+
+                if (konsentrasiBaru >= konsentrasiAkhir && (!terbaik || konsentrasiBaru < terbaikKonsentrasi)) {
+                    terbaik = { pipet, labu };
+                    terbaikKonsentrasi = konsentrasiBaru;
+                }
+            }
+        }
+
+        if (!terbaik) {
+            hasil += `<strong>Langkah ${langkah}:</strong> Tidak ada kombinasi pipet dan labu yang sesuai untuk mencapai konsentrasi target.<br/><br/>`;
+            break;
+        }
+
+        let namaLarutan = `Larutan_${langkah}`;
+        hasil += `<strong>Langkah ${langkah}:</strong> Ambil ${terbaik.pipet} mL dari larutan awal, lalu encerkan hingga ${terbaik.labu} mL.<br/>`;
+        hasil += `<em>Konsentrasi setelah pengenceran ini:</em> ${terbaikKonsentrasi.toFixed(2)}.<br/><br/>`;
+
+        diagramFlowchart1 += `
+            Larutan_Awal -->|${terbaik.pipet} mL | ${namaLarutan}["${namaLarutan.replace(/_/g, " ")}\<br>${terbaikKonsentrasi.toFixed(2)}\<br>Volume: ${terbaik.labu} mL"]`;
+
+        konsentrasiSekarang = terbaikKonsentrasi;
+        langkah++;
+    }
+
+    document.getElementById("hasilSatuTarget").innerHTML = hasil || "Tidak dapat melakukan pengenceran dengan parameter yang diberikan.";
+    document.getElementById("flowchart1").innerHTML = `<div class="mermaid">${diagramFlowchart1}</div>`;
+    mermaid.run();
+}
+
+
+    </script>
+    
+</head>
+<body>
+
+    <div class="container">
+        <div class ="logo">
+        <h2 style="text-align: center;">Kalkulator Pengenceran</h2>
+        <img src="logo.jpg" alt="Logo"></div>
+
+        <!-- Pengenceran Berantai + Flowchart -->
+        <div class="calculator-section">
+            <div class="calculator">
+               <h3>Pengenceran Berantai</h3>
+                <label>Konsentrasi Awal :</label>
+                <input type="number" id="konsentrasiAwalBerantai">  <br><br>
+               <label>Konsentrasi Target & Volume Akhir:</label>
+                <div id="targets"></div>
+                <button onclick="tambahTarget()">+ Tambah Target</button>
+                <button onclick="hitungPengenceranBerantai()">Hitung</button>
+                <div id="hasilBerantai"></div>
+            </div>
+
+            <div class="flowchart-container">
+                <h3>Diagram Pengenceran</h3>
+                <div id="flowchart"></div>
+            </div>
+        </div>
+
+        <!-- Pengenceran Satu Target + Flowchart -->
+        <div class="calculator-section">
+            <div class="calculator">
+                <h3>Pengenceran Satu Target</h3>
+                <label>Konsentrasi Awal :</label>
+                <input type="number" id="konsentrasiAwalSatuTarget">  <br><br>
+                <label>Konsentrasi Akhir :</label>
+                <input type="number" id="konsentrasiAkhirSatuTarget">
+                <button onclick="hitungPengenceranSatuTarget()">Hitung</button>
+                <div id="hasilSatuTarget"></div>
+            </div>
+
+            <div class="flowchart-container">
+                <h3>Diagram Pengenceran</h3>
+                <div id="flowchart1"></div>
+            </div>
+        </div>
+
+    </div>
+
+</body>
+</html>
