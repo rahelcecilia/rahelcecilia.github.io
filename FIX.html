@@ -4,21 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kalkulator Pengenceran</title> 
+    
     <style>
-
-        .logo {
-            display: flex;
-            align-items: center; /* Menyamakan tinggi teks dan gambar */
-            gap: 10px; /* Jarak antara teks dan gambar */
-        }
-        img {
-            max-width: 100px; /* Sesuaikan ukuran gambar */
-            height: auto;
-        }
-
         body {
             font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
+            background-color: #eef2f7;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -31,59 +21,70 @@
             display: flex;
             flex-direction: column;
             background: white;
-            padding: 20px;
+            padding: 30px;
             border-radius: 10px;
             box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.2);
-            max-width: 1000px;
+            /* max-width: 1200px; */
             width: 100%;
-            gap : 20px;
+            gap: 20px;
+            width: 100%;
+            min-height: 200px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .logo img {
+            max-width: 150px;
+            height: auto;
         }
 
         .calculator-section {
             display: flex;
             flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: flex-start;
             background: white;
-
             border-radius: 10px;
             box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
             width: 100%;
-            gap : 20px;
+        }
+
+        .calculator, .flowchart-container {
+            display: flex;
+            flex-direction: column;
             align-items: center;
-        }
-
-        .calculator {
-            flex: 1;
-            min-width: 300px;
             text-align: center;
+            width: 50%;
+            
         }
-
         .flowchart-container {
             flex: 1;
-            min-width: 300px;
+            min-width: 500px;
             background: #eef2f7;
             border-radius: 10px;
             overflow-x: auto;
-            max-height: 500px;
+            height: 600px;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             padding: 20px;
-          
         }
 
-        #flowchart, #flowchart1 {
-            min-width: 400px;
-            min-height: 400px;
-        }
 
         input, button {
             margin-top: 10px;
             padding: 10px;
             font-size: 16px;
-            width: 75%;
+            width: 80%;
             border: 1px solid #ccc;
             border-radius: 5px;
+            font-size: 30px;
         }
 
         button {
@@ -98,26 +99,46 @@
             background-color: #0056b3;
         }
 
-        #hasilBerantai, #hasilSatuTarget {
-            margin-top: 20px;
-            text-align: left;
+        @media (max-width: 768px) {
+            .calculator-section {
+                grid-template-columns: 1fr;
+            }
+
+            .flowchart-container {
+                width: 100%;
+                height: 400px;
+            }
         }
 
         .target-container {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 10px;
-        }
+    display: flex; /* Membuat input dan dropdown sejajar */
+    gap: 10px; /* Jarak antar elemen */
+    align-items: center; /* Supaya sejajar vertikal */
+    width: 100%; /* Sesuaikan dengan container */
+}
 
-        .target-container input {
-            flex: 1;
-        }
+input.target {
+    flex:10; /* Biar input lebih besar */
+    padding: 12px;
+    font-size: 30px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
 
-        @media (max-width: 768px) {
-            .calculator-section {
-                flex-direction: column;
-            }
-        }
+select.volume {
+    flex: 2; /* Dropdown lebih kecil dari input */
+    padding: 10px;
+    font-size: 30px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+}   
+
+label {
+font-size: 30px;
+}
+
     </style>
 
     <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
@@ -166,7 +187,7 @@
 
         targets.sort((a, b) => b.konsentrasi - a.konsentrasi);
 
-        let pipetTersedia = [1, 2, 3, 4, 5, 6, 10, 15, 20, 25, 40, 50,100];
+        let pipetTersedia = [1, 2, 3, 4, 5, 6, 10, 15, 20, 25, 40, 50, 100];
         let larutanTersedia = [{ nama: "Larutan_Awal", konsentrasi: konsentrasiAwal, volume: Infinity }];
         let hasil = "";
         let diagramFlowchart = `graph LR; Larutan_Awal["Larutan Awal\n${konsentrasiAwal} \nVolume: ∞ mL"]`;
@@ -220,16 +241,38 @@
             }
         });
 
-        document.getElementById("hasilBerantai").innerHTML = hasil;
-        document.getElementById("flowchart").innerHTML = `<div class="mermaid">${diagramFlowchart}</div>`;
-        mermaid.init();
-    }
+    document.getElementById("hasilBerantai").innerHTML = hasil;
+document.getElementById("flowchart").innerHTML = `
+    <div class="mermaid" style="font-size: 20px; width: 100%; height: auto;">
+        ${diagramFlowchart}
+    </div>
+`;
+mermaid.init();
+// Tunggu sampai Mermaid selesai merender diagram
+setTimeout(() => {
+    let mermaidEl = document.querySelector(".mermaid");
+    
+    // Perbesar seluruh diagram
+    mermaidEl.style.zoom = "300%";
+    // mermaidEl.style.transform = "scale(2)";  // Sesuaikan angka
+    mermaidEl.style.transformOrigin = "top left";
+
+    // Perbesar teks di dalam flowchart
+    document.querySelectorAll(".mermaid text").forEach(el => {
+        el.style.fontSize = "100px"; // Sesuaikan ukuran teks
+        el.style.fontWeight = "bold"; // Opsional agar lebih jelas
+    });
+}, 500);  // Tunggu sedikit agar Mermaid selesai merender
+
+
+
+}
 
         function hitungPengenceranSatuTarget() {
     let konsentrasiAwal = parseFloat(document.getElementById("konsentrasiAwalSatuTarget").value);
     let konsentrasiAkhir = parseFloat(document.getElementById("konsentrasiAkhirSatuTarget").value);
-    let pipetTersedia = [1, 2, 3, 4, 5, 10, 15, 25, 40, 50];
-    let labuTersedia = [50, 100, 200, 250];
+    let pipetTersedia = [1, 2, 3, 4, 5, 6, 10, 15, 25, 40, 50];
+    let labuTersedia = [25, 50, 100, 200, 250, 500, 100];
     let hasil = "";
     let diagramFlowchart1 = `graph LR; Larutan_Awal["Larutan Awal\<br>${konsentrasiAwal} \<br>Volume: ∞ mL"]`;
     
@@ -272,60 +315,74 @@
         langkah++;
     }
 
-    document.getElementById("hasilSatuTarget").innerHTML = hasil || "Tidak dapat melakukan pengenceran dengan parameter yang diberikan.";
-    document.getElementById("flowchart1").innerHTML = `<div class="mermaid">${diagramFlowchart1}</div>`;
-    mermaid.run();
-}
+document.getElementById("hasilSatuTarget").innerHTML = hasil || "Tidak dapat melakukan pengenceran dengan parameter yang diberikan.";
+document.getElementById("flowchart1").innerHTML = `
+    <div class="mermaid" style="font-size: 20px; width: 100%; height: auto;">
+        ${diagramFlowchart1}
+    </div>
+`;
+mermaid.init();
+// Tunggu sampai Mermaid selesai merender diagram
+setTimeout(() => {
+    let mermaidEl = document.querySelector(".mermaid");
+    
+    // Perbesar seluruh diagram
+    mermaidEl.style.zoom = "300%";
+    // mermaidEl.style.transform = "scale(2)";  // Sesuaikan angka
+    mermaidEl.style.transformOrigin = "top left";
+
+    // Perbesar teks di dalam flowchart
+    document.querySelectorAll(".mermaid text").forEach(el => {
+        el.style.fontSize = "100px"; // Sesuaikan ukuran teks
+        el.style.fontWeight = "bold"; // Opsional agar lebih jelas
+    });
+}, 500);  // Tunggu sedikit agar Mermaid selesai merender
+        }
+
 
 
     </script>
     
 </head>
 <body>
-
     <div class="container">
-        <div class ="logo">
-        <h2 style="text-align: center;">Kalkulator Pengenceran</h2>
-        <img src="logo.jpg" alt="Logo"></div>
+        <div class="logo">
+            <h1>Kalkulator Pengenceran</h1>
+            <img src="logo.jpg" alt="Logo">
+        </div>
 
-        <!-- Pengenceran Berantai + Flowchart -->
         <div class="calculator-section">
             <div class="calculator">
-               <h3>Pengenceran Berantai</h3>
+                <h1>Pengenceran Berantai</h1>
                 <label>Konsentrasi Awal :</label>
-                <input type="number" id="konsentrasiAwalBerantai">  <br><br>
-               <label>Konsentrasi Target & Volume Akhir:</label>
+                <input type="number" id="konsentrasiAwalBerantai">  <br>
+                <label>Konsentrasi Target & Volume Akhir:</label>
                 <div id="targets"></div>
                 <button onclick="tambahTarget()">+ Tambah Target</button>
-                <button onclick="hitungPengenceranBerantai()">Hitung</button>
+                <button onclick="hitungPengenceranBerantai()">Hitung</button><br>
                 <div id="hasilBerantai"></div>
             </div>
-
             <div class="flowchart-container">
-                <h3>Diagram Pengenceran</h3>
+                <!-- <h3>Diagram Pengenceran</h3> -->
                 <div id="flowchart"></div>
             </div>
         </div>
 
-        <!-- Pengenceran Satu Target + Flowchart -->
         <div class="calculator-section">
             <div class="calculator">
-                <h3>Pengenceran Satu Target</h3>
+                <h1>Pengenceran Satu Target</h1>
                 <label>Konsentrasi Awal :</label>
-                <input type="number" id="konsentrasiAwalSatuTarget">  <br><br>
+                <input type="number" id="konsentrasiAwalSatuTarget">  <br>
                 <label>Konsentrasi Akhir :</label>
                 <input type="number" id="konsentrasiAkhirSatuTarget">
-                <button onclick="hitungPengenceranSatuTarget()">Hitung</button>
+                <button onclick="hitungPengenceranSatuTarget()">Hitung</button> <br>
                 <div id="hasilSatuTarget"></div>
             </div>
-
             <div class="flowchart-container">
-                <h3>Diagram Pengenceran</h3>
+                <!-- <h3>Diagram Pengenceran</h3> -->
                 <div id="flowchart1"></div>
             </div>
         </div>
-
     </div>
-
 </body>
 </html>
