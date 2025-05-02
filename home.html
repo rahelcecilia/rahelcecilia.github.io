@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Dashboard Visualisasi</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      overflow-y: scroll;
+    }
+    .section {
+      display: flex;
+      height: 100vh; /* Full screen height */
+    }
+    .visual {
+      width: 66.66%; /* 2/3 */
+      padding: 10px;
+      background-color: #f0f0f0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .visual iframe, .visual canvas {
+      width: 95%;
+      height: 90%;
+      border: none;
+      background: white;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      border-radius: 8px;
+    }
+    .text {
+      width: 33.33%; /* 1/3 */
+      padding: 20px;
+      background-color: #ffffff;
+      overflow-y: auto;
+      border-left: 1px solid #ccc;
+    }
+    .text h2 {
+      margin-top: 0;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Section 1 -->
+  <div class="section">
+    <div class="visual">
+      <!-- Ganti iframe atau canvas sesuai kebutuhan -->
+      <iframe src="https://app.powerbi.com/view?r=eyJrIjoiMWRkNjQwM2EtMDRmMC00NDFhLWE1NTQtNGM1NTUzOGRiNjgwIiwidCI6IjFkNTE2OWFjLWM3Y2ItNDI3NS05NzY0LWJmOGM5YzM2NGE0YyIsImMiOjEwfQ%3D%3D" allowfullscreen></iframe>
+    </div>
+    <div class="text"> <br>
+      <h2>Visualisasi 1</h2>
+      <p>Penjelasan tentang visualisasi pertama. Bisa berisi insight data, kesimpulan, dan konteks analisis.</p>
+    </div>
+  </div>
+
+  <!-- Section 2 -->
+  <div class="section">
+    <div class="visual">
+      <iframe src="https://app.powerbi.com/view?r=eyJrIjoiMzhkZmFkYmEtMmMyZC00ZDY3LWFmYWUtOThmNDI5MzAwY2MwIiwidCI6IjFkNTE2OWFjLWM3Y2ItNDI3NS05NzY0LWJmOGM5YzM2NGE0YyIsImMiOjEwfQ%3D%3D" allowfullscreen></iframe>
+    </div>
+    <div class="text">
+      <h2>Visualisasi 2</h2>
+      <p>Penjelasan untuk visualisasi kedua. Ubah sesuai isi data dan analisismu.</p>
+    </div>
+  </div>
